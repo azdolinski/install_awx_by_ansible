@@ -1,0 +1,43 @@
+---
+# Deploy AWX tasks
+- name: Deploy AWX
+  ansible.builtin.shell: |
+    kubectl apply -k base
+  args:
+    chdir: "{{ awx_on_k3s_dir }}"
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+- name: Wait for AWX pods to be ready (this may take several minutes)
+  ansible.builtin.shell: |
+    kubectl -n awx get pods | grep -E 'awx-(web|task)' | grep -q Running
+  args:
+    chdir: "{{ awx_on_k3s_dir }}"
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: awx_status
+  until: awx_status.rc == 0
+  retries: 60
+  delay: 30
+
+- name: Get AWX resources
+  ansible.builtin.shell: |
+    kubectl -n awx get awx,all,ingress,secrets
+  args:
+    chdir: "{{ awx_on_k3s_dir }}"
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: awx_resources
+
+- name: Display AWX resources
+  ansible.builtin.debug:
+    var: awx_resources.stdout_lines
+
+- name: Display AWX access information
+  ansible.builtin.debug:
+    msg:
+      - "AWX has been successfully deployed!"
+      - "You can access AWX at: https://{{ awx_hostname }}/"
+      - "Username: admin"
+      - "Password: {{ admin_password }}"
+      - "Note: Make sure your DNS or hosts file is configured to resolve {{ awx_hostname }} to your server's IP address."

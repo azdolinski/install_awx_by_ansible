@@ -1,0 +1,22 @@
+---
+# Install K3s tasks
+- name: Install K3s
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -s - {{ k3s_install_args }}
+  args:
+    creates: /usr/local/bin/k3s
+  register: k3s_install
+
+- name: Wait for K3s to be ready
+  ansible.builtin.wait_for:
+    path: /etc/rancher/k3s/k3s.yaml
+    state: present
+    delay: 5
+    timeout: 300
+  when: k3s_install.changed
+
+- name: Export KUBECONFIG environment variable
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    line: KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    state: present

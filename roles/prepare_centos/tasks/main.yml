@@ -1,0 +1,29 @@
+---
+# Prepare CentOS host tasks
+- name: Disable firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Disable nm-cloud-setup service
+  ansible.builtin.systemd:
+    name: nm-cloud-setup.service
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Disable nm-cloud-setup timer
+  ansible.builtin.systemd:
+    name: nm-cloud-setup.timer
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Install required packages
+  ansible.builtin.dnf:
+    name:
+      - git
+      - curl
+    state: present

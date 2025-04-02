@@ -1,0 +1,46 @@
+---
+# Prepare AWX files tasks
+- name: Generate SSL certificate for AWX
+  ansible.builtin.shell: |
+    openssl req -x509 -nodes -days {{ ssl_expiration_days }} -newkey rsa:2048 \
+    -out {{ ssl_certificate_path }} -keyout {{ ssl_key_path }} \
+    -subj "/CN={{ awx_hostname }}/O={{ awx_hostname }}" \
+    -addext "subjectAltName = DNS:{{ awx_hostname }}"
+  args:
+    creates: "{{ ssl_certificate_path }}"
+
+- name: Update AWX hostname in base/awx.yaml
+  ansible.builtin.lineinfile:
+    path: "{{ awx_on_k3s_dir }}/base/awx.yaml"
+    regexp: '^\s+- hostname:.*$'
+    line: "    - hostname: {{ awx_hostname }}"
+    state: present
+
+- name: Update admin password in base/kustomization.yaml
+  ansible.builtin.replace:
+    path: "{{ awx_on_k3s_dir }}/base/kustomization.yaml"
+    regexp: '(\s+literals:\n\s+- password=).*'
+    replace: '\1{{ admin_password }}'
+
+- name: Update postgres password in base/kustomization.yaml
+  ansible.builtin.replace:
+    path: "{{ awx_on_k3s_dir }}/base/kustomization.yaml"
+    regexp: '(\s+- username=.*\n\s+- password=).*'
+    replace: '\1{{ postgres_password }}'
+
+- name: Create data directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ data_dir }}"
+    - "{{ postgres_data_dir }}"
+
+- name: Create projects directory with specific ownership
+  ansible.builtin.file:
+    path: "{{ projects_data_dir }}"
+    state: directory
+    owner: 1000
+    group: 0
+    mode: "0755"

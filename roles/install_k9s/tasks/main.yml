@@ -1,0 +1,44 @@
+---
+# tasks file for install_k9s
+
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - curl
+      - bash
+      - tar
+    state: present
+
+- name: Check if k9s is already installed
+  ansible.builtin.stat:
+    path: "{{ k9s_binary_path }}"
+  register: k9s_binary
+
+- name: Install k9s using webi
+  ansible.builtin.shell: |
+    curl -sS https://webi.sh/k9s | bash
+  args:
+    executable: /bin/bash
+    creates: "{{ k9s_binary_path }}"
+  when: not k9s_binary.stat.exists
+
+- name: Ensure k9s is executable
+  ansible.builtin.file:
+    path: "{{ k9s_binary_path }}"
+    mode: "0755"
+  when: not k9s_binary.stat.exists
+
+- name: Create k9s alias in .bashrc
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: 'alias k9s="TERM={{ k9s_term }} KUBE_EDITOR={{ k9s_editor }} k9s --kubeconfig {{ k3s_kubeconfig_path }}"'
+    regexp: "^alias k9s="
+    state: present
+
+- name: Create k9s alias in .bash_profile
+  ansible.builtin.lineinfile:
+    path: /root/.bash_profile
+    line: 'alias k9s="TERM={{ k9s_term }} KUBE_EDITOR={{ k9s_editor }} k9s --kubeconfig {{ k3s_kubeconfig_path }}"'
+    regexp: "^alias k9s="
+    state: present
+    create: yes

@@ -1,0 +1,39 @@
+---
+# AWX configuration variables
+# K3s Variables
+k3s_version: "v1.29.6+k3s2"
+k3s_install_args: "--write-kubeconfig-mode 644"
+
+# AWX Variables
+awx_hostname: "{{ lookup('env', 'AWX_HOSTNAME') | default('awx.example.com', true) }}"
+postgres_password: "{{ lookup('env', 'AWX_POSTGRES_PASSWORD') | default('Ansible123!', true) }}"
+admin_password: "{{ lookup('env', 'AWX_ADMIN_PASSWORD') | default('Ansible123!', true) }}"
+
+# Storage directories
+data_dir: "/data"
+postgres_data_dir: "{{ data_dir }}/postgres-15"
+projects_data_dir: "{{ data_dir }}/projects"
+
+# Git repository for AWX deployment
+# To get latest version of AWX Operator
+# > awx_latest_version=$(curl -s https://api.github.com/repos/ansible/awx-operator/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")') && echo $awx_latest_version
+awx_on_k3s_repo: "https://github.com/kurokobo/awx-on-k3s.git"
+awx_on_k3s_version: "2.19.1"
+awx_on_k3s_dir: "/tmp/awx-on-k3s"
+
+# SSL certificate variables
+ssl_certificate_path: "{{ awx_on_k3s_dir }}/base/tls.crt"
+ssl_key_path: "{{ awx_on_k3s_dir }}/base/tls.key"
+ssl_expiration_days: "3650"
+
+# Inventory variables
+awx_host_address: "{{ lookup('env', 'AWX_HOST_ADDRESS') | default('192.168.1.100', true) }}"
+awx_host_user: "{{ lookup('env', 'AWX_HOST_USER') | default('centos', true) }}"
+
+# SSH authentication - use either key-based or password-based
+# For key-based authentication
+#awx_host_ssh_key_file: "~/.ssh/id_rsa" # Update this to your SSH key file
+
+# For password-based authentication (uncomment and set values to use)
+awx_host_ssh_pass: "{{ lookup('env', 'AWX_HOST_PASSWORD') | default(omit) }}"
+awx_host_become_pass: "{{ lookup('env', 'AWX_SUDO_PASSWORD') | default(omit) }}"

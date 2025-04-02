@@ -1,0 +1,14 @@
+---
+# defaults file for install_k9s
+
+# Path to k9s binary
+k9s_binary_path: /root/.local/bin/k9s
+
+# Path to k3s kubeconfig
+k3s_kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+
+# Terminal settings for k9s
+k9s_term: xterm-256color
+
+# Editor for k9s
+k9s_editor: nano

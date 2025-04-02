@@ -1,0 +1,35 @@
+---
+# Update system tasks
+- name: Wait for system to become reachable
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
+- name: Gather facts after system is reachable
+  ansible.builtin.setup:
+
+- name: Update all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: yes
+
+- name: Install EPEL repository
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+  ignore_errors: true
+
+- name: Install required packages for system management
+  ansible.builtin.dnf:
+    name:
+      - python3
+      - python3-pip
+      - vim
+      - nano
+      - wget
+      - net-tools
+      - mc
+      - tree
+      - htop
+      - git
+    state: present

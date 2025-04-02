@@ -1,0 +1,21 @@
+---
+# Main playbook to install AWX on CentOS system
+- name: Install AWX on CentOS using K3s
+  hosts: awx_servers
+  become: true
+  gather_facts: true
+  roles:
+    - role: update_system
+      tags: [update, system]
+    - role: prepare_centos
+      tags: [prepare, centos]
+    - role: install_k3s
+      tags: [install, k3s]
+    - role: install_awx_operator
+      tags: [install, awx, operator]
+    - role: prepare_awx_files
+      tags: [prepare, awx, files]
+    - role: deploy_awx
+      tags: [deploy, awx]
+    - role: install_k9s
+      tags: [install, k9s]
