@@ -2,6 +2,11 @@
 
 This Ansible project automates the installation of AWX on a CentOS system using K3s, following the process described in the [awx-on-k3s](https://github.com/kurokobo/awx-on-k3s) project.
 
+
+# insert docs mp4
+
+
+
 ## Project Structure
 
 ```text
