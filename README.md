@@ -39,31 +39,28 @@ Before running the playbook, update the following files:
 
 ## Usage
 
-1. Configure your inventory variables:
+1. Update the variables in the hosts.yml file with your specific environment details.
 
     ```bash
-    # Create a variables file for your environment
-    cp inventories/hosts.example.yml inventories/hosts.yml
+    nano group_vars/awx_servers.yml
     ```
 
-2. Update the variables in the hosts.yml file with your specific environment details.
-
-3. Run the installation script:
+2. Run the installation script:
 
     ```bash
-    ./run.sh
+    bash run.sh
     ```
 
 The script will:
-  • Set up a Python virtual environment
-  • Install required dependencies
+  • Set up a local Python virtual environment
+  • Install local required dependencies
   • Prompt for configuration values
-  • Run the Ansible playbook
+  • Run the Ansible playbook and install k3s/AWX on remote host
 
 Alternatively, you can run the playbook directly:
 
 ```bash
-ansible-playbook -i inventories/hosts.yml playbooks/awx_install.yml
+ansible-playbook -i inventories/hosts.yml site.yml
 ```
 
 You can also run specific parts of the installation using tags:
@@ -72,19 +69,19 @@ You can also run specific parts of the installation using tags:
 
 ```bash
 # Prepare CentOS only
-ansible-playbook -i inventories/hosts.yml playbooks/awx_install.yml --tags=prepare,centos
+ansible-playbook -i inventories/hosts.yml site.yml --tags=prepare,centos
 
 # Install K3s only
-ansible-playbook -i inventories/hosts.yml playbooks/awx_install.yml --tags=install,k3s
+ansible-playbook -i inventories/hosts.yml site.yml --tags=install,k3s
 
 # Install AWX Operator only
-ansible-playbook -i inventories/hosts.yml playbooks/awx_install.yml --tags=install,awx,operator
+ansible-playbook -i inventories/hosts.yml site.yml --tags=install,awx,operator
 
 # Prepare AWX files only
-ansible-playbook -i inventories/hosts.yml playbooks/awx_install.yml --tags=prepare,awx,files
+ansible-playbook -i inventories/hosts.yml site.yml --tags=prepare,awx,files
 
 # Deploy AWX only
-ansible-playbook -i inventories/hosts.yml playbooks/awx_install.yml --tags=deploy,awx
+ansible-playbook -i inventories/hosts.yml site.yml --tags=deploy,awx
 ```
 
 ## Notes
