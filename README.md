@@ -6,18 +6,21 @@ This Ansible project automates the installation of AWX on a CentOS system using 
 
 ```text
 install_awx_by_ansible/
+├── ansible.cfg             # Ansible configuration file
 ├── inventories/
+│   ├── hosts.example.yml   # Example inventory file
 │   └── hosts.yml           # Inventory file
 ├── group_vars/
 │   └── awx_servers.yml     # Group variables for AWX servers
-├── playbooks/
-│   └── awx_install.yml     # Main playbook for AWX installation
 ├── roles/
+│   ├── update_system/      # Role to update system packages
 │   ├── prepare_centos/     # Role to prepare CentOS host
 │   ├── install_k3s/        # Role to install K3s
+│   ├── install_k9s/        # Role to install K9s CLI tool
 │   ├── install_awx_operator/ # Role to install AWX Operator
 │   ├── prepare_awx_files/  # Role to prepare AWX files
 │   └── deploy_awx/         # Role to deploy AWX
+├── site.yml                # Main playbook for AWX installation
 └── run.sh                  # Installation script
 ```
 
