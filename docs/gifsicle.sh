@@ -1,0 +1,1 @@
+ffmpeg -i awx_install.mp4 -pix_fmt rgb24 -r 10 -f gif - | gifsicle --optimize=3 --delay=3 > awx_install.gif
